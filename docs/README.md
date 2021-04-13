@@ -109,4 +109,8 @@ optional arguments:
   --model MODEL         Your pre-trained classification model of choice
 
 ```
-    
+Пример использования:
+```
+python main.py —mode predict —image C:\Users\SanZenSekai\PycharmProjects\Transfer-Learning-Suite
+\Items\test\domestic_2_images\257.jpg —model ResNet50 —resize_width 112 —resize_height 112 —dataset Items
+```
