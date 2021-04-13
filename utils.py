@@ -60,7 +60,7 @@ def build_finetune_model(base_model, dropout, fc_layers, num_classes):
     x = base_model.output
     x = Flatten()(x)
     for fc in fc_layers:
-        x = Dense(fc, activation='relu')(x) # New FC layer, random init
+        x = Dense(fc, activation='relu')(x)  # New FC layer, random init
         x = Dropout(dropout)(x)
 
     predictions = Dense(num_classes, activation='softmax')(x) # New softmax layer
