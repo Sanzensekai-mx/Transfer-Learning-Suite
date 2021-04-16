@@ -1,23 +1,23 @@
 # Layers
 from keras.layers import Dense, Activation, Flatten, Dropout
-from keras import backend as K
+# from keras import backend as K
 
 # Other
-from keras import optimizers
-from keras import losses
-from keras.optimizers import SGD, Adam
+# from keras import optimizers
+# from keras import losses
+# from keras.optimizers import SGD, Adam
 from keras.models import Sequential, Model
-from keras.callbacks import ModelCheckpoint, LearningRateScheduler
-from keras.models import load_model
+# from keras.callbacks import ModelCheckpoint, LearningRateScheduler
+# from keras.models import load_model
 
 # Utils
 import matplotlib.pyplot as plt
-import numpy as np
-import argparse
+# import numpy as np
+# import argparse
 import random, glob
 import os, sys, csv
-import cv2
-import time, datetime
+# import cv2
+# import time, datetime
 
 
 def save_class_list(class_list, model_name, dataset_name):
@@ -26,6 +26,7 @@ def save_class_list(class_list, model_name, dataset_name):
     for c in class_list:
         target.write(c)
         target.write("\n")
+
 
 def load_class_list(class_list_file):
     class_list = []
@@ -36,11 +37,13 @@ def load_class_list(class_list_file):
     class_list.sort()
     return class_list
 
+
 # Get a list of subfolders in the directory
 def get_subfolders(directory):
     subfolders = os.listdir(directory)
     subfolders.sort()
     return subfolders
+
 
 # Get number of files by searching directory recursively
 def get_num_files(directory):
@@ -51,6 +54,7 @@ def get_num_files(directory):
         for dr in dirs:
             cnt += len(glob.glob(os.path.join(r, dr + "/*")))
     return cnt
+
 
 # Add on new FC layers with dropout for fine tuning
 def build_finetune_model(base_model, dropout, fc_layers, num_classes):
@@ -65,9 +69,10 @@ def build_finetune_model(base_model, dropout, fc_layers, num_classes):
 
     predictions = Dense(num_classes, activation='softmax')(x) # New softmax layer
     
-    finetune_model = Model(inputs=base_model.input, outputs=predictions)
+    fine_tune_model = Model(inputs=base_model.input, outputs=predictions)
 
-    return finetune_model
+    return fine_tune_model
+
 
 # Plot the training and validation loss + accuracy
 def plot_training(history):

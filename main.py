@@ -1,35 +1,36 @@
 from __future__ import print_function
 
 # Networks
-from keras.preprocessing import image
+# from keras.preprocessing import image
 from keras.applications.resnet50 import ResNet50
 from keras.applications.vgg16 import VGG16
 from keras.applications.vgg19 import VGG19
 from keras.applications.inception_v3 import InceptionV3
 from keras.applications.xception import Xception
-from keras.applications.inception_resnet_v2 import InceptionResNetV2
+# from keras.applications.inception_resnet_v2 import InceptionResNetV2
 from keras.applications.mobilenet import MobileNet
 from keras.applications.densenet import DenseNet121, DenseNet169, DenseNet201
 from keras.applications.nasnet import NASNetLarge, NASNetMobile
 from keras.preprocessing.image import ImageDataGenerator
 
 # Layers
-from keras.layers import Dense, Activation, Flatten, Dropout
+# from keras.layers import Dense, Activation, Flatten, Dropout
 from keras import backend as K
 
 # Other
-from keras import optimizers
-from keras import losses
+# from keras import optimizers
+# from keras import losses
 from keras.optimizers import SGD, Adam
-from keras.models import Sequential, Model
+# from keras.models import Sequential, Model
 from keras.callbacks import ModelCheckpoint, LearningRateScheduler
-from keras.models import load_model
+# from keras.models import load_model
 
 # Utils
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
+import matplotlib as plt
 import numpy as np
 import argparse
-import random, glob
+# import random, glob
 import os, sys, csv
 import cv2
 import time, datetime
@@ -110,11 +111,11 @@ elif args.model == "Xception":
 
     preprocessing_function = preprocess_input
     base_model = Xception(weights='imagenet', include_top=False, input_shape=(HEIGHT, WIDTH, 3))
-elif args.model == "InceptionResNetV2":
-    from keras.applications.inceptionresnetv2 import preprocess_input
-
-    preprocessing_function = preprocess_input
-    base_model = InceptionResNetV2(weights='imagenet', include_top=False, input_shape=(HEIGHT, WIDTH, 3))
+# elif args.model == "InceptionResNetV2":
+#     from keras.applications.inceptionresnetv2 import preprocess_input
+#
+#     preprocessing_function = preprocess_input
+#     base_model = InceptionResNetV2(weights='imagenet', include_top=False, input_shape=(HEIGHT, WIDTH, 3))
 elif args.model == "MobileNet":
     from keras.applications.mobilenet import preprocess_input
 
@@ -189,14 +190,14 @@ if args.mode == "train":
     class_list = utils.get_subfolders(TRAIN_DIR)
     utils.save_class_list(class_list, model_name=args.model, dataset_name=args.dataset)
 
-    finetune_model = utils.build_finetune_model(base_model, dropout=args.dropout, fc_layers=FC_LAYERS,
-                                                num_classes=len(class_list))
+    fine_tune_model = utils.build_finetune_model(base_model, dropout=args.dropout, fc_layers=FC_LAYERS,
+                                                 num_classes=len(class_list))
 
     if args.continue_training:
-        finetune_model.load_weights("./checkpoints/" + args.model + "_model_weights.h5")
+        fine_tune_model.load_weights("./checkpoints/" + args.model + "_model_weights.h5")
 
     adam = Adam(lr=0.00001)
-    finetune_model.compile(adam, loss='categorical_crossentropy', metrics=['accuracy'])
+    fine_tune_model.compile(adam, loss='categorical_crossentropy', metrics=['accuracy'])
 
     num_train_images = utils.get_num_files(TRAIN_DIR)
     num_val_images = utils.get_num_files(VAL_DIR)
@@ -216,12 +217,12 @@ if args.mode == "train":
     checkpoint = ModelCheckpoint(filepath, monitor=["acc"], verbose=1, mode='max')
     callbacks_list = [checkpoint]
 
-    history = finetune_model.fit(train_generator, epochs=args.num_epochs, workers=8,
-                                 steps_per_epoch=num_train_images // BATCH_SIZE,
-                                 validation_data=validation_generator,
-                                 validation_steps=num_val_images // BATCH_SIZE,
-                                 # class_weight='auto',
-                                 shuffle=True, callbacks=callbacks_list)
+    history = fine_tune_model.fit(train_generator, epochs=args.num_epochs, workers=8,
+                                  steps_per_epoch=num_train_images // BATCH_SIZE,
+                                  validation_data=validation_generator,
+                                  validation_steps=num_val_images // BATCH_SIZE,
+                                  # class_weight='auto',
+                                  shuffle=True, callbacks=callbacks_list)
 
     utils.plot_training(history)
 
@@ -244,16 +245,16 @@ elif args.mode == "predict":
 
     class_list = utils.load_class_list(class_list_file)
 
-    finetune_model = utils.build_finetune_model(base_model=base_model,
-                                                num_classes=len(class_list),
-                                                dropout=args.dropout,
-                                                fc_layers=FC_LAYERS)
-    finetune_model.load_weights("./checkpoints/" + args.model + "_model_weights.h5")
+    fine_tune_model = utils.build_finetune_model(base_model=base_model,
+                                                 num_classes=len(class_list),
+                                                 dropout=args.dropout,
+                                                 fc_layers=FC_LAYERS)
+    fine_tune_model.load_weights("./checkpoints/" + args.model + "_model_weights.h5")
 
     # Run the classifier and print results
     st = time.time()
 
-    out = finetune_model.predict(image)
+    out = fine_tune_model.predict(image)
 
     confidence = out[0]
     class_prediction = list(out[0]).index(max(out[0]))
